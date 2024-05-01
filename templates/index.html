@@ -1,0 +1,33 @@
+{% extends "_base.html" %}
+
+{% block content %}
+<div style="text-align: center;">
+    {% if state %}
+    <h1 class="text-3xl text-green-800">
+        TO DO LIST
+    </h1>
+    
+    <form class="mt-4" hx-post="/" hx-target="#response-container" hx-swap="outerHTML" hx-trigger="submit">
+        {% csrf_token %}
+        <input type="text"   name="task" class="px-4 py-2 border border-red-600 rounded-md focus:outline-none focus:border-green-500" placeholder="Enter your task...">
+        <button type="submit" class="ml-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:bg-green-600">Add Task</button>
+    </form>
+    {% endif %}
+</div>
+<div class="task-list container m-12" id="response-container">
+    <h1 class="text-3xl text-green-800">All Tasks</h1> (Please press Edit button after editing your task)
+    {% for task in tasks %}
+    <form class="flex items-center justify-between border-b border-gray-200 py-4">
+        {% csrf_token %}
+        <input class="tasks" type="text" value="{{ task.title }}" name="edited">
+        <button id="editbtn" hx-post="{% url 'edit' task.task_id %}">Edit</button>
+        <button id="deletebtn" hx-delete="{% url 'delete' task.task_id %}" hx-target="body">Delete</button>
+        {% if task.stat %}
+		<input class="checkboxcls" name="chec" hx-post="{% url 'checkbox' task.task_id %}" id="checkbox-{{ task.task_id }}" type="checkbox" value="{{ task.stat }}" checked>
+		{%else%}
+		<input class="checkboxcls" name="chec" hx-post="{% url 'checkbox' task.task_id %}" id="checkbox-{{ task.task_id }}" type="checkbox" value="{{ task.stat }}">
+		{% endif %}
+	</form>
+    {% endfor %}
+</div>
+{% endblock content %}
