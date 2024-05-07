@@ -6,7 +6,7 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name="home"),
-    path('edit/<int:id>/', views.edit, name="edit"),
-    path('delete/<int:id>/', views.delete, name="delete"),
-    path('checkbox/<int:id>/', views.checkbox, name="checkbox"),
+    path('edit/<int:task_id>/', views.edit, name="edit"),
+    path('delete/<int:task_id>/', views.delete, name="delete"),
+    path('checkbox/<int:task_id>/', views.checkbox, name="checkbox"),
 ]
