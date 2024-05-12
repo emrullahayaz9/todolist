@@ -1,18 +1,20 @@
 """
 Views for managing Todo items.
 """
+
 from django.shortcuts import render
 from django.http import HttpResponse
 from .models import TodoItem
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def home(request):
     """
-     Function to render the home page.
-     Lists all tasks when a GET request is received.
-     adds a new task when a POST request is received.
+    Function to render the home page.
+    Lists all tasks when a GET request is received.
+    adds a new task when a POST request is received.
     """
     all_tasks = TodoItem.objects.all()
     if request.method == "GET":
@@ -21,7 +23,7 @@ def home(request):
         return render(request, "index.html", {"tasks": tasks, "state": state})
 
     if request.method == "POST":
-        task_name = request.POST.get('task')
+        task_name = request.POST.get("task")
         if task_name:
             TodoItem.objects.create(title=task_name)
             tasks = TodoItem.objects.all()
@@ -39,9 +41,8 @@ def delete(request, task_id):
         TodoItem.objects.filter(task_id=task_id).delete()
         state = True
         all_tasks = TodoItem.objects.all()
-        return render(request, "index.html",
-                      {"tasks": all_tasks, "state": state})
-    except:
+        return render(request, "index.html", {"tasks": all_tasks, "state": state})
+    except ObjectDoesNotExist:
         return HttpResponse("CANNOT FIND THE OBJECT")
 
 
@@ -50,7 +51,7 @@ def edit(request, task_id):
     Function to edit a task.
     Edits the task with the specified id.
     """
-    if request.method=="POST":
+    if request.method == "POST":
         edited = request.POST.get("edited")
         task = TodoItem.objects.get(task_id=task_id)
         task.title = edited
@@ -61,7 +62,7 @@ def edit(request, task_id):
         If the user sends a request to /edit and
         it is not a POST request, then the user will not do anything.
         """
-        return JsonResponse(status=401)      
+        return JsonResponse(status=401)
 
 
 def checkbox(request, task_id):
@@ -71,12 +72,11 @@ def checkbox(request, task_id):
     """
     if request.method == "POST":
         task = TodoItem.objects.get(task_id=task_id)
-        if task.stat == True:
+        if task.stat is True:
             task.stat = False
-            task.save()         
+            task.save()
         else:
             task.stat = True
-            print(task.stat)
             task.save()
     state = False
     all_tasks = TodoItem.objects.all()
